@@ -18,11 +18,32 @@ def article_content (request):
 def get_index_page(request):
     all_articles=Article.objects.all()
     return render(request, 'blog/index.html',{'article_list':all_articles})
-def get_detail_page(request):
-    curr_article=Article.objects.all()[0]
+def get_detail_page(request, article_id):
+    curr_article=None
+    all_articles=Article.objects.all()
+    previous_index=0
+    next_index=0
+    for index, article in enumerate(all_articles):
+        if index==0:
+            previous_index=0
+            next_index=index+1
+        elif index==len(all_articles)-1:
+            next_index=index
+            previous_index=index-1
+        else:
+            previous_index=index-1
+            next_index=index+1
+
+        if article.article_id == article_id:
+            curr_article=article
+            previous_article=all_articles[previous_index]
+            next_article=all_articles[next_index]
+            break
     section_list=curr_article.content.split('\n')
     return render(request, 'blog/detail.html',
             {
                         'curr_article':curr_article,
-                        'section_list':section_list
+                        'section_list':section_list,
+                'previous_article':previous_article,
+                'next_article':next_article,
                     })
