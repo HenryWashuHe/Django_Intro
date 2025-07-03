@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from blog.models import Article
+import csv
 # Create your views here.
 def hello_world(request):
     return HttpResponse("Hello, World!")
@@ -47,3 +48,13 @@ def get_detail_page(request, article_id):
                 'previous_article':previous_article,
                 'next_article':next_article,
                     })
+def get_csv_page(request):
+    rows=[]
+    if request.method=='POST' and request.FILES.get('csv_file'):
+        csv_file = request.FILES['csv_file']
+        decoded_file=csv_file.read().decode('utf-8').splitlines()
+        reader=csv.reader(decoded_file)
+        rows=list(reader)
+        print("CSV_Data",rows)
+
+    return render(request, "blog/csv_test.html", {'rows':rows})
